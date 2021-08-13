@@ -83,8 +83,25 @@ public class Array {
         return ret;
     }
 
+    public int[] getArray() {
+        int[] arrayReturn=new int[last];
+        for(int i=0;i<last;i++){
+            arrayReturn[i]=array[i];
+        }
+        return arrayReturn;
+    }
+
     public static void main(String[] args) {
         Array array = new Array(10);
+        array.insert(0,1);
+        array.insert(1,2);
+        array.insert(2,3);
+        array.insert(3,4);
+        int[] arrayArray = array.getArray();
+        for(int i=0;i<arrayArray.length;i++){
+            System.out.println(arrayArray[i]);
+        }
+
     }
 
 }
