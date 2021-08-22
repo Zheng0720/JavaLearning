@@ -41,8 +41,9 @@ public class Day06 {
 
     /**
      * 给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。
-     *解题思路：快慢指针法，先让fast走n步，那样fast和slow之间相差n个节点，这样在同时出发，
+     * 解题思路：快慢指针法，先让fast走n步，那样fast和slow之间相差n个节点，这样在同时出发，
      * 当fast走到末尾时，slow处正好为倒数第n个节点
+     *
      * @param head
      * @param n
      * @return
@@ -66,6 +67,15 @@ public class Day06 {
         }
         slow.next = slow.next.next;
         return head;
+    }
+
+    public static void main(String[] args) {
+        boolean f = true;
+        if (!f) {
+            System.out.println(1);
+        } else {
+            System.out.println(2);
+        }
     }
 
 }
