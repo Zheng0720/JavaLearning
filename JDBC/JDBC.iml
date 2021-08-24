@@ -26,7 +26,16 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../jarPackage/mysql-connector-java-8.0.26/mysql-connector-java-8.0.26/mysql-connector-java-8.0.26.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../jarPackage/mysql-connector-java-8.0.12/mysql-connector-java-8.0.12/mysql-connector-java-8.0.12.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../jarPackage/c3p0-0.9.5.5.bin/c3p0-0.9.5.5/lib/mchange-commons-java-0.2.19.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -36,6 +45,24 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../jarPackage/c3p0-0.9.5.5.bin/c3p0-0.9.5.5/lib/c3p0-0.9.5.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../jarPackage/commons-dbcp-1.4/commons-dbcp-1.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../jarPackage/commons-pool-1.5.5/commons-pool-1.5.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
