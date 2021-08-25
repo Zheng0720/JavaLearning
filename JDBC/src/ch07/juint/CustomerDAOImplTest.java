@@ -96,12 +96,14 @@ class CustomerDAOImplTest {
     void getAll() {
         Connection connection = null;
         try {
-            connection = JDBCUtils.getConnectionC3p0();
+            connection = JDBCUtils.getConnectionDBCP();
             List<Customer> all = dao.getAll(connection);
             for (Customer cust : all) {
                 System.out.println(cust);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             JDBCUtils.closeResource(connection, null);

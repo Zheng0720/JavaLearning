@@ -3,7 +3,9 @@ package util;
 
 import ch02.ConnectionTest;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import org.apache.commons.dbcp.BasicDataSourceFactory;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
@@ -53,6 +55,30 @@ public class JDBCUtils {
 
     public static Connection getConnectionC3p0() throws SQLException {
         Connection connection = cpds.getConnection();
+        return connection;
+    }
+
+    /**
+     * 使用DBCP数据库连接池获取连接
+     *
+     * @return
+     * @throws Exception
+     */
+    private static DataSource dataSource;
+    static {
+        try {
+            Properties pros = new Properties();
+            InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("dbcp.properties");
+            pros.load(is);
+            dataSource = BasicDataSourceFactory.createDataSource(pros);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public static Connection getConnectionDBCP() throws Exception {
+
+
+        Connection connection = dataSource.getConnection();
         return connection;
     }
 
