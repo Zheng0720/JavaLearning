@@ -96,7 +96,7 @@ class CustomerDAOImplTest {
     void getAll() {
         Connection connection = null;
         try {
-            connection = JDBCUtils.getConnectionDBCP();
+            connection = JDBCUtils.getConnectionDruid();
             List<Customer> all = dao.getAll(connection);
             for (Customer cust : all) {
                 System.out.println(cust);

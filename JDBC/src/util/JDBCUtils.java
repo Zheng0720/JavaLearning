@@ -2,6 +2,7 @@ package util;
 
 
 import ch02.ConnectionTest;
+import com.alibaba.druid.pool.DruidDataSourceFactory;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.apache.commons.dbcp.BasicDataSourceFactory;
 
@@ -79,6 +80,27 @@ public class JDBCUtils {
 
 
         Connection connection = dataSource.getConnection();
+        return connection;
+    }
+
+
+    private static DataSource dataSourceDruid;
+    static {
+        try {
+            Properties properties = new Properties();
+            InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("Druid.properties");
+            properties.load(is);
+            dataSourceDruid=DruidDataSourceFactory.createDataSource(properties);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public static Connection getConnectionDruid() throws SQLException {
+
+
+        Connection connection = dataSourceDruid.getConnection();
         return connection;
     }
 
