@@ -1,7 +1,5 @@
 package ch05_xml;
 
-import java.math.BigDecimal;
-
 /**
  * @author ZhengXinchang
  * @create 2021-09-02-11:41
@@ -9,13 +7,13 @@ import java.math.BigDecimal;
 public class Book {
     private String sn;
     private String name;
-    private BigDecimal price;
+    private double price;
     private String author;
 
     public Book() {
     }
 
-    public Book(String sn, String name, BigDecimal price, String author) {
+    public Book(String sn, String name, double price, String author) {
         this.sn = sn;
         this.name = name;
         this.price = price;
@@ -38,11 +36,11 @@ public class Book {
         this.name = name;
     }
 
-    public BigDecimal getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
