@@ -90,4 +90,30 @@
         <servlet-name>Servlet2</servlet-name>
         <url-pattern>/servlet2</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>ResponseIOServlet</servlet-name>
+        <servlet-class>ch07_servlet2.ResponseIOServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ResponseIOServlet</servlet-name>
+        <url-pattern>/response</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Response1</servlet-name>
+        <servlet-class>ch07_servlet2.Response1</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Response1</servlet-name>
+        <url-pattern>/response1</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Response2</servlet-name>
+        <servlet-class>ch07_servlet2.Response2</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Response2</servlet-name>
+        <url-pattern>/response2</url-pattern>
+    </servlet-mapping>
 </web-app>
