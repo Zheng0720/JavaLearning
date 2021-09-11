@@ -17,7 +17,6 @@ public class JDBCUtils {
     private static DruidDataSource dataSource;
 
     static {
-
         try {
             Properties properties = new Properties();
             //读取配置文件

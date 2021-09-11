@@ -116,4 +116,58 @@
         <servlet-name>Response2</servlet-name>
         <url-pattern>/response2</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>PrintHtml</servlet-name>
+        <servlet-class>ch08_jsp.PrintHtml</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PrintHtml</servlet-name>
+        <url-pattern>/printHtml</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>SearchStudentServlet</servlet-name>
+        <servlet-class>ch08_jsp.SearchStudentServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SearchStudentServlet</servlet-name>
+        <url-pattern>/searchStudent</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>UpLoadServlet</servlet-name>
+        <servlet-class>ch09_ELAndJSTL.UpLoadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UpLoadServlet</servlet-name>
+        <url-pattern>/upLoadServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DownloadServlet</servlet-name>
+        <servlet-class>ch09_ELAndJSTL.DownloadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DownloadServlet</servlet-name>
+        <url-pattern>/downloadServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CookieServlet</servlet-name>
+        <servlet-class>ch10_cookieAndSession.servlet.CookieServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CookieServlet</servlet-name>
+        <url-pattern>/cookieServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>ch10_cookieAndSession.servlet.LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/loginServlet</url-pattern>
+    </servlet-mapping>
+
 </web-app>

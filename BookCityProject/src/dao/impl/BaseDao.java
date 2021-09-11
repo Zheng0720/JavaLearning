@@ -6,7 +6,6 @@ import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import utils.JDBCUtils;
 
-import javax.management.Query;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;

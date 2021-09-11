@@ -3,8 +3,6 @@ package dao.impl;
 import dao.UserDao;
 import pojo.User;
 
-import javax.sql.rowset.serial.SerialStruct;
-import java.sql.SQLException;
 
 /**
  * @author ZhengXinchang
