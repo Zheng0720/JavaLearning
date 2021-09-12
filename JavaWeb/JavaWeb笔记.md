@@ -3957,6 +3957,435 @@ resp.setHeader(**"Location"**, **"http://localhost:8080"**);
 resp.sendRedirect(**"http://localhost:8080"**);
 ```
 
+## 第八章 jsp
+
+### 8.1 什么是jsp
+
+jsp 的全换是 java server pages。Java 的服务器页面。 jsp 的主要作用是代替 Servlet 程序回传 html 页面的数据。
+
+### 8.2 jsp的本质是什么
+
+jsp 页面本质上是一个 Servlet 程序。 当我们第一次访问 jsp 页面的时候。Tomcat 服务器会帮我们把 jsp 页面翻译成为一个 java 源文件。并且对它进行编译成为.class 字节码程序。
+
+### 8.3 jsp的三种语法
+
+#### 8.3.1 jsp头部的page 指令
+
+jsp 的 page 指令可以修改 jsp 页面中一些重要的属性，或者行为。
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="j
+```
+
+i. language 属性    表示 jsp 翻译后是什么语言文件。暂时只支持 java。 
+
+ii. contentType 属性    表示 jsp 返回的数据类型是什么。也是源码中 response.setContentType()参数值 
+
+iii. pageEncoding 属性    表示当前 jsp 页面文件本身的字符集。 
+
+iv. import 属性    跟 java 源代码中一样。用于导包，导类。 
+
+========================两个属性是给 out 输出流使用============================= 
+
+v. autoFlush 属性    设置当 out 输出流缓冲区满了之后，是否自动刷新冲级区。默认值是 true。 
+
+vi. buffer 属性   设置 out 缓冲区的大小。默认是 8kb 
+
+========================两个属性是给 out 输出流使用============================= 
+
+vii.  errorPage 属性   设置当 jsp 页面运行时出错，自动跳转去的错误页面路径。
+
+#### 8.3.2 jsp中常用脚本
+
+（1）表达式脚本
+
+表达式脚本的格式是：**<%=**表达式**%>** 
+
+表达式脚本的作用是：的 jsp 页面上输出数据。
+
+```jsp
+<%=12 %> <br> 
+<%=12.12 %> <br> 
+<%="我是字符串" %> <br> 
+<%=map%> <br> 
+<%=request.getParameter("username")%>
+```
+
+(2)代码脚本
+
+代码脚本的格式是： 
+
+```jsp
+<% 
+	java 语句 
+%> 
+```
+
+代码脚本的作用是：可以在 jsp 页面中，编写我们自己需要的功能（写的是 java 语句）。
+
+```jsp
+<%--练习：--%> <%--1.代码脚本----if 语句--%>
+<%
+    int i = 13;
+    if (i == 12) {
+%>
+<h1>国哥好帅</h1>
+<%
+} else {
+%>
+<h1>国哥又骗人了！</h1>
+<%
+    }
+%> <br>
+<%--2.代码脚本----for 循环语句--%>
+<table border="1" cellspacing="0">
+    <% for (int j = 0; j < 10; j++) {
+    %>
+    <tr>
+        <td>第 <%=j + 1%>行</td>
+    </tr>
+    <% } %></table>
+<%--3.翻译后 java 文件中_jspService 方法内的代码都可以写--%>
+<%
+    String username = request.getParameter("username");
+    System.out.println("用户名的请求参数值是：" + username);
+%>
+```
+
+### 8.4 jsp的九大内置对象
+
+jsp 中的内置对象，是指 Tomcat 在翻译 jsp 页面成为 Servlet 源代码后，内部提供的九大对象，叫内置对象。
+
+![image-20210912163854482](C:\Users\ZhengXinchang\AppData\Roaming\Typora\typora-user-images\image-20210912163854482.png)
+
+### 8.5 jsp四大域对象
+
+|域对象|类	| 有效范围     |
+| ---- | ---- | ---- |
+|pageContext| (PageContextImpl 类)| 当前 jsp 页面范围内有效 |
+|request| (HttpServletRequest 类)| 一次请求内有效 |
+|session| (HttpSession 类)| 一个会话范围内有效（打开浏览器访问服务器，直到关闭浏览器） |
+|application| (ServletContext 类) |整个 web 工程范围内都有效（只要 web 工程不停止，数据都在）|
+
+域对象是可以像 Map 一样存取数据的对象。四个域对象功能一样。不同的是它们对数据的存取范围。 
+
+虽然四个域对象都可以存取数据。在使用上它们是有优先顺序的。 
+
+四个域在使用的时候，优先顺序分别是，他们从小到大的范围的顺序。 
+
+pageContext ====>>> request ====>>> session ====>>> application
+
+### 8.6 jsp常用标签
+
+（1）静态包含
+
+```jsp
+<%--
+<%@ include file=""%> 就是静态包含 
+    file 属性指定你要包含的 jsp 页面的路径 
+    地址中第一个斜杠 / 表示为 http://ip:port/工程路径/ 映射到代码的 web 目录 
+
+静态包含的特点： 
+    1、静态包含不会翻译被包含的 jsp 页面。 
+    2、静态包含其实是把被包含的 jsp 页面的代码拷贝到包含的位置执行输出。
+--%>
+<%@ include file="/include/footer.jsp" %>
+```
+
+(2)jsp标签+转发
+
+```jsp
+<%--
+    <jsp:forward page=""></jsp:forward> 是请求转发标签，它的功能就是请求转发 
+    page 属性设置请求转发的路径 --%> 
+<jsp:forward page="/scope2.jsp"></jsp:forward>
+```
+
+
+
+## 第九章 EL表达式和JSTL标签库
+
+### 9.1 EL表达式
+
+#### 9.1.1 什么是EL表达式和EL表达式的作用
+
+EL 表达式的全称是：Expression Language。是表达式语言。 
+
+EL 表达式的什么作用：EL 表达式主要是代替 jsp 页面中的表达式脚本在 jsp 页面中进行数据的输出。 因为 EL 表达式在输出数据的时候，要比 jsp 的表达式脚本要简洁很多。
+
+```jsp
+<body>
+<%
+    request.setAttribute("key", "值");
+%>
+表达式脚本输出 key 的值是：
+<%=request.getAttribute("key1") == null ? "" : request.getAttribute("key1")%><br/>
+EL 表达式输出 key 的值是：${key1}
+</body>
+```
+
+EL 表达式的格式是：${表达式} 
+
+EL 表达式在输出 null 值的时候，输出的是空串。jsp 表达式脚本输出 null 值的时候，输出的是 null 字符串。
+
+#### 9.1.2 EL表达式搜索域数据的顺序
+
+EL 表达式主要是在 jsp 页面中输出数据。 
+
+主要是输出域对象中的数据。 
+
+当四个域中都有相同的 key 的数据的时候，EL 表达式会按照四个域的从小到大的顺序去进行搜索，找到就输出。
+
+（1）EL表达式的11个隐含对象
+
+| 变量|   类型   |  作用    |
+| ---- | ---- | ---- |
+|pageContext |PageContextImpl |它可以获取 jsp 中的九大内置对象 |
+|pageScope |Map<String,Object>| 它可以获取 pageContext 域中的数据 |
+|requestScope| Map<String,Object>| 它可以获取 Request 域中的数据 |
+|sessionScope |Map<String,Object> |它可以获取 Session 域中的数据|
+|applicationScope| Map<String,Object> |它可以获取 ServletContext 域中的数据 |
+|param |Map<String,String>| 它可以获取请求参数的值 |
+|paramValues |Map<String,String[]> |它也可以获取请求参数的值，获取多个值的时候使用。|
+|header| Map<String,String> |它可以获取请求头的信息 |
+|headerValues| Map<String,String[]> |它可以获取请求头的信息，它可以获取多个值的情况|
+|cookie |Map<String,Cookie> |它可以获取当前请求的 Cookie 信息|
+|initParam| Map<String,String> |它可以获取在 web.xml 中配置的<context-param>上下文参数|
+
+**EL** **获取四个特定域中的属性** 
+
+pageScope ====== pageContext 域 
+
+requestScope ====== Request 域 
+
+sessionScope ====== Session 域 
+
+applicationScope ====== ServletContext 域
+
+### 9.2 JSTL标签库
+
+**core核心库的使用**
+
+```jsp
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%--
+  Created by IntelliJ IDEA.
+  User: Administrator
+  Date: 2020/2/4
+  Time: 14:04
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>Title</title>
+</head>
+<body>
+    <%--
+    i.<c:set />
+        作用：set标签可以往域中保存数据
+
+        域对象.setAttribute(key,value);
+        scope 属性设置保存到哪个域
+            page表示PageContext域（默认值）
+            request表示Request域
+            session表示Session域
+            application表示ServletContext域
+        var属性设置key是多少
+        value属性设置值
+    --%>
+    保存之前：${ sessionScope.abc } <br>
+    <c:set scope="session" var="abc" value="abcValue"/>
+    保存之后：${ sessionScope.abc } <br>
+    <hr>
+
+    <%--
+       ii.<c:if />
+         if标签用来做if判断。
+         test属性表示判断的条件（使用EL表达式输出）
+    --%>
+    <c:if test="${ 12 == 12 }">
+        <h1>12等于12</h1>
+    </c:if>
+    <c:if test="${ 12 != 12 }">
+        <h1>12不等于12</h1>
+    </c:if>
+    <hr>
+
+    <%--
+    iii.<c:choose> <c:when> <c:otherwise>标签
+    作用：多路判断。跟switch ... case .... default非常接近
+
+    choose标签开始选择判断
+    when标签表示每一种判断情况
+        test属性表示当前这种判断情况的值
+    otherwise标签表示剩下的情况
+
+    <c:choose> <c:when> <c:otherwise>标签使用时需要注意的点：
+        1、标签里不能使用html注释，要使用jsp注释
+        2、when标签的父标签一定要是choose标签
+    --%>
+    <%
+        request.setAttribute("height", 180);
+    %>
+    <c:choose>
+        <%-- 这是html注释 --%>
+        <c:when test="${ requestScope.height > 190 }">
+            <h2>小巨人</h2>
+        </c:when>
+         <c:when test="${ requestScope.height > 180 }">
+            <h2>很高</h2>
+        </c:when>
+        <c:when test="${ requestScope.height > 170 }">
+            <h2>还可以</h2>
+        </c:when>
+        <c:otherwise>
+            <c:choose>
+                <c:when test="${requestScope.height > 160}">
+                    <h3>大于160</h3>
+                </c:when>
+                <c:when test="${requestScope.height > 150}">
+                    <h3>大于150</h3>
+                </c:when>
+                <c:when test="${requestScope.height > 140}">
+                    <h3>大于140</h3>
+                </c:when>
+                <c:otherwise>
+                    其他小于140
+                </c:otherwise>
+            </c:choose>
+        </c:otherwise>
+    </c:choose>
+
+
+</body>
+</html>
+
+```
+
+**foreach的使用**
+
+```jsp
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.atguigu.pojo.Student" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%--
+  Created by IntelliJ IDEA.
+  User: Administrator
+  Date: 2020/2/4
+  Time: 14:32
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>Title</title>
+    <style type="text/css">
+        table{
+            width: 500px;
+            border: 1px solid red;
+            border-collapse: collapse;
+        }
+        th , td{
+            border: 1px solid red;
+        }
+    </style>
+</head>
+<body>
+    <%--1.遍历1到10，输出
+        begin属性设置开始的索引
+        end 属性设置结束的索引
+        var 属性表示循环的变量(也是当前正在遍历到的数据)
+        for (int i = 1; i < 10; i++)
+
+    <table border="1">
+        <c:forEach begin="1" end="10" var="i">
+            <tr>
+                <td>第${i}行</td>
+            </tr>
+        </c:forEach>
+    </table>--%>
+    <hr>
+   <%-- 2.遍历Object数组
+        for (Object item: arr)
+        items 表示遍历的数据源（遍历的集合）
+        var 表示当前遍历到的数据
+
+    <%
+        request.setAttribute("arr", new String[]{"18610541354","18688886666","18699998888"});
+    %>
+    <c:forEach items="${ requestScope.arr }" var="item">
+        ${ item } <br>
+    </c:forEach> --%>
+    <hr>
+    <%
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("key1", "value1");
+        map.put("key2", "value2");
+        map.put("key3", "value3");
+//        for ( Map.Entry<String,Object> entry : map.entrySet()) {
+//        }
+        request.setAttribute("map", map);
+    %>
+    <c:forEach items="${ requestScope.map }" var="entry">
+        <h1>${entry.key} = ${entry.value}</h1>
+    </c:forEach>
+    <hr>
+    <%--4.遍历List集合---list中存放 Student类，有属性：编号，用户名，密码，年龄，电话信息--%>
+    <%
+        List<Student> studentList = new ArrayList<Student>();
+        for (int i = 1; i <= 10; i++) {
+            studentList.add(new Student(i,"username"+i ,"pass"+i,18+i,"phone"+i));
+        }
+        request.setAttribute("stus", studentList);
+    %>
+    <form action="" enctype=""></form>
+    <table>
+        <tr>
+            <th>编号</th>
+            <th>用户名</th>
+            <th>密码</th>
+            <th>年龄</th>
+            <th>电话</th>
+            <th>操作</th>
+        </tr>
+        <%--
+            items 表示遍历的集合
+            var 表示遍历到的数据
+            begin表示遍历的开始索引值
+            end 表示结束的索引值
+            step 属性表示遍历的步长值
+            varStatus 属性表示当前遍历到的数据的状态
+            for（int i = 1; i < 10; i+=2）
+        --%>
+    <c:forEach begin="2" end="7" step="2" varStatus="status" items="${requestScope.stus}" var="stu">
+        <tr>
+            <td>${stu.id}</td>
+            <td>${stu.username}</td>
+            <td>${stu.password}</td>
+            <td>${stu.age}</td>
+            <td>${stu.phone}</td>
+            <td>${status.step}</td>
+        </tr>
+    </c:forEach>
+    </table>
+
+</body>
+</html>
+
+```
+
+
+
+
+
+
+
+
+
 ## 书城项目
 
 ### 第一阶段 表单的验证
@@ -4548,3 +4977,394 @@ public class LoginServlet extends HttpServlet {
     }
 }
 ```
+
+### 第三阶段
+
+#### 1.页面jsp动态化
+
+1. 在 html 页面顶行添加 page 指令。 
+2. 修改文件后缀名为：.jsp 
+3. 使用 IDEA 搜索替换.html 为.jsp(快捷键：Ctrl+Shift+R)
+
+#### 2.抽取页面中相同的内容
+
+1. head标签
+2. 每个页面的页脚
+3. 登陆成功后的菜单
+4. manager模块中的菜单
+
+#### 3.登录注册错误时的提示，及表单的回显
+
+以登录为例，将回显信息添加到request域中：
+
+```java
+if (loginUser == null) {
+    System.out.println("登录失败");
+    //把错误信息，和回显的表单项信息，保存到request域中
+    req.setAttribute("msg", "用户名或密码错误");
+    req.setAttribute("username", username);
+    req.getRequestDispatcher("/pages/user/login.jsp").forward(req, resp);
+}
+```
+
+jsp页面也要输出回显信息：
+
+```jsp
+<%--登录错误信息--%>
+${requestScope.msg==null?"请输入用户名和密码":requestScope.msg}
+<%--用户名回显信息--%>
+<input class="itxt" type="text" placeholder="请输入用户名"  
+       autocomplete="off"tabindex="1" name="username" value="${requestScope.username}"/>
+```
+
+#### 4.BaseServlet的抽取
+
+##### 优化一：合并LoginServlet和RgistServlet程序为UserServlet程序
+
+##### 优化二：使用反射优化大量else if代码
+
+```java
+@Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("utf-8");
+        String action = req.getParameter("action");
+
+        try {
+            Method declaredMethod = this.getClass().getDeclaredMethod(action, HttpServletRequest.class, HttpServletResponse.class);
+            declaredMethod.invoke(this, req, resp);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+```
+
+##### 优化三：抽取BaseServlet程序
+
+#### 5.数据的封装和抽取BeanUtils的使用
+
+```java
+package utils;
+
+import org.apache.commons.beanutils.BeanUtils;
+import pojo.User;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+
+/**
+ * @author ZhengXinchang
+ * @create 2021-09-09-15:43
+ */
+public class WebUtils {
+    //把 Map 中的值注入到对应的 JavaBean 属性中。
+    public static <T> T copyParamToBean(Map value, T bean) {
+        try {
+            BeanUtils.populate(bean, value);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return bean;
+    }
+}
+```
+
+### 第四阶段 使用EL表达式修改表单回显
+
+### 第五阶段 
+
+#### MVC 概念
+
+MVC 
+
+全称：Model 模型、 View 视图、 Controller 控制器。 
+
+MVC 
+
+最早出现在 JavaEE 三层中的 Web 层，它可以有效的指导 Web 层的代码如何有效分离，单独工作。 
+
+View 视图：只负责数据和界面的显示，不接受任何与显示数据无关的代码，便于程序员和美工的分工合作—— JSP/HTML。
+
+Controller 控制器：只负责接收请求，调用业务层的代码处理请求，然后派发页面，是一个“调度者”的角色——Servlet。 转到某个页面。或者是重定向到某个页面。 
+
+Model 模型：将与业务逻辑相关的数据封装为具体的 JavaBean 类，其中不掺杂任何与数据处理相关的代码——JavaBean/domain/entity/pojo。 
+
+**MVC** **是一种思想** 
+
+MVC 的理念是将软件代码拆分成为组件，单独开发，组合使用（**目的还是为了降低耦合度**）。
+
+![image-20210912171737807](C:\Users\ZhengXinchang\AppData\Roaming\Typora\typora-user-images\image-20210912171737807.png)
+
+**MVC** **的作用还是为了降低耦合。让代码合理分层。方便后期升级和维护。**
+
+#### 1.图书模块
+
+##### 1.1编写图书的数据库表
+
+```sql
+create table book_table(
+    id int primary key auto_increment,
+    name varchar(100),
+    price decimal(11,2),
+    author varchar(100),
+    sales int,
+    stock int,
+    img_path varchar(200)
+);
+```
+
+##### 1.2 编写图书的javaBean
+
+Book类
+
+```java
+package pojo;
+
+/**
+ * @author ZhengXinchang
+ * @create 2021-09-09-17:13
+ */
+public class Book {
+    private Integer id;
+    private String name;
+    private double price;
+    private String author;
+    private int sales;
+    private int stock;
+    private String imgPath = "static/img/default.jpg";
+
+    public Book() {
+    }
+
+    public Book(Integer id, String name, double price, String author, int sales, int stock, String imgPath) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.author = author;
+        this.sales = sales;
+        this.stock = stock;
+        //要求给定的图书封面路径不能为空
+        if (imgPath != null && !"".equals(imgPath)) {
+            this.imgPath = imgPath;
+        }
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public int getSales() {
+        return sales;
+    }
+
+    public void setSales(int sales) {
+        this.sales = sales;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public String getImgPath() {
+        return imgPath;
+    }
+
+    public void setImgPath(String imgPath) {
+        if (imgPath != null && !"".equals(imgPath)) {
+            this.imgPath = imgPath;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", author='" + author + '\'' +
+                ", sales=" + sales +
+                ", stock=" + stock +
+                ", imgPath='" + imgPath + '\'' +
+                '}';
+    }
+}
+
+```
+
+##### 1.3编写图书模块的Dao
+
+Dao接口
+
+```java
+public interface BookDao {
+
+    public int addBook(Book book);
+
+    public int deleteBookById(Integer id);
+
+    public int updateBook(Book book);
+
+    public Book queryBookById(Integer id);
+
+    public Book queryBookByName(String name);
+
+    public List<Book> queryBooks();
+
+    public Integer queryForPageTotalCount();
+
+    public List<Book> queryForPageItems(int begin,int pageSize);
+}
+```
+
+BookDaoImpl实现类
+
+```java
+public class BookDaoImpl extends BaseDao implements BookDao {
+
+    @Override
+    public int addBook(Book book) {
+        String sql = "insert into book_table(`name`,`author`,`price`,`sales`,`stock`,`img_path`) " +
+                "values(?,?,?,?,?,?)";
+        return update(sql, book.getName(), book.getAuthor(), book.getPrice(), book.getSales(), book.getStock(), book.getImgPath());
+    }
+
+    @Override
+    public int deleteBookById(Integer id) {
+        String sql = "delete from book_table where id=?";
+        return update(sql, id);
+    }
+
+    @Override
+    public int updateBook(Book book) {
+        String sql = "update book_table set `name`=?,`author`=?,`price`=?,`sales`=?,`stock`=?,`img_path`=? where id=?";
+        return update(sql, book.getName(), book.getAuthor(), book.getPrice(), book.getSales(),
+                book.getStock(), book.getImgPath(), book.getId());
+    }
+
+    @Override
+    public Book queryBookById(Integer id) {
+        String sql = "select `id` , `name` , `author` , `price` , `sales` , `stock` , `img_path` imgPath " +
+                "from book_table where id=?";
+        return queryForOne(Book.class, sql, id);
+    }
+
+    @Override
+    public Book queryBookByName(String name) {
+        String sql = "select `id` , `name` , `author` , `price` , `sales` , `stock` , `img_path` imgPath from book_table where name=?";
+        return queryForOne(Book.class, sql, name);
+    }
+
+    @Override
+    public List<Book> queryBooks() {
+        String sql = "select `id` , `name` , `author` , `price` , `sales` , `stock` , `img_path` imgPath from book_table";
+        return queryForList(Book.class, sql);
+    }
+
+    @Override
+    public Integer queryForPageTotalCount() {
+        String sql = "select count(*) from `book_table`";
+        Number value = (Number) queryForSingleValue(sql);
+        return value.intValue();
+    }
+
+    @Override
+    public List<Book> queryForPageItems(int begin, int pageSize) {
+        String sql = "select `id` , `name` , `author` , `price` , `sales` , `stock` , `img_path` imgPath from book_table limit ?,?";
+        return queryForList(Book.class, sql, begin, pageSize);
+    }
+}
+```
+
+##### 1.4 编写图书模块的service
+
+BookService接口
+
+```java
+public interface BookService {
+
+    public void addBook(Book book);
+
+    public void deleteBookById(Integer id);
+
+    public void updateBook(Book book);
+
+    public Book queryBookById(Integer id);
+
+    public List<Book> queryBooks();
+}
+```
+
+BookService接口实现类
+
+```java
+public class BookServiceImpl implements BookService {
+    private BookDao bookDao = new BookDaoImpl();
+
+    @Override
+    public void addBook(Book book) {
+        bookDao.addBook(book);
+    }
+
+    @Override
+    public void deleteBookById(Integer id) {
+        bookDao.deleteBookById(id);
+    }
+
+    @Override
+    public void updateBook(Book book) {
+        bookDao.updateBook(book);
+    }
+
+    @Override
+    public Book queryBookById(Integer id) {
+        return bookDao.queryBookById(id);
+    }
+
+    @Override
+    public List<Book> queryBooks() {
+        return bookDao.queryBooks();
+    }
+}
+```
+
+##### 1.5 编写图书模块的web层，和页面的联调测试
+
