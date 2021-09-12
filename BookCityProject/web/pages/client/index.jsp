@@ -6,6 +6,14 @@
     <meta charset="UTF-8">
     <title>书城首页</title>
     <%@include file="/pages/common/head.jsp" %>
+    <script type="text/javascript">
+        $(function () {
+            $("button.addToCart").click(function () {
+                var bookId = $(this).attr("bookId");
+                location.href = "cartServlet?action=addItem&bookId=" + bookId;
+            });
+        });
+    </script>
 </head>
 <body>
 
@@ -13,8 +21,17 @@
     <img class="logo_img" alt="" src="static/img/logo.gif">
     <span class="wel_word">网上书城</span>
     <div>
-        <a href="pages/user/login.jsp">登录</a> |
-        <a href="pages/user/regist.jsp">注册</a> &nbsp;&nbsp;
+        <%--        如果已经登录，显示登录-注册界面--%>
+        <c:if test="${empty sessionScope.user}">
+            <a href="pages/user/login.jsp">登录</a> |
+            <a href="pages/user/regist.jsp">注册</a>
+        </c:if>
+        <%--如果已经登录，显示用户信息--%>
+        <c:if test="${not empty sessionScope.user}">
+            <span>欢迎<span class="um_span">${sessionScope.user.username}</span>光临尚硅谷书城</span>
+            <a href="pages/order/order.jsp">我的订单</a>
+            <a href="userServlet?action=logout">注销</a>&nbsp;&nbsp;
+        </c:if>
         <a href="pages/cart/cart.jsp">购物车</a>
         <a href="pages/manager/manager.jsp">后台管理</a>
     </div>
@@ -63,7 +80,7 @@
                         <span class="sp2">${book.stock}</span>
                     </div>
                     <div class="book_add">
-                        <button>加入购物车</button>
+                        <button bookId="${book.id}" class="addToCart">加入购物车</button>
                     </div>
                 </div>
             </div>

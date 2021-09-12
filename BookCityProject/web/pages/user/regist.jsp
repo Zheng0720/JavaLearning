@@ -55,6 +55,11 @@
                 $("span.errorMsg").text("");
             });
         });
+        $(function (){
+            $("#code_img").click(function (){
+                this.src="${basePath}/kaptcha.jpg?d="+new Date();
+            });
+        });
     </script>
     <style type="text/css">
         .login_form {
@@ -111,8 +116,9 @@
                         <br/>
                         <br/>
                         <label>验证码：</label>
-                        <input class="itxt" type="text" style="width: 150px;" name="code" id="code"/>
-                        <img alt="" src="static/img/code.bmp" style="float: right; margin-right: 40px">
+                        <input class="itxt" type="text" style="width: 80px;" name="code" id="code"/>
+                        <img id="code_img" alt="" src="kaptcha.jpg"
+                             style="float: right; margin-right: 50px;width: 120px;height: 40px">
                         <br/>
                         <br/>
                         <input type="submit" value="注册" id="sub_btn"/>
