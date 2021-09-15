@@ -33,7 +33,7 @@ public class CartServlet extends BaseServlet {
             req.getSession().setAttribute("cart", cart);
         }
         cart.addItem(cartItem);
-        System.out.println(cart);
+        req.getSession().setAttribute("lastName", cartItem.getName());
         //重定向
         resp.sendRedirect(req.getHeader("Referer"));
     }
@@ -58,5 +58,19 @@ public class CartServlet extends BaseServlet {
             resp.sendRedirect(req.getHeader("Referer"));
         }
         resp.sendRedirect("http://localhost:8080/BookCityProject");
+    }
+
+    protected void updateCount(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String idString = req.getParameter("id");
+        int id = idString == null ? 0 : Integer.parseInt(idString);
+
+        String countString = req.getParameter("count");
+        int count = countString == null ? 1 : Integer.parseInt(countString);
+
+        Cart cart = (Cart) req.getSession().getAttribute("cart");
+        if (cart != null) {
+            cart.updateCount(id, count);
+            resp.sendRedirect(req.getHeader("Referer"));
+        }
     }
 }

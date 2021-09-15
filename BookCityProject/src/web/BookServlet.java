@@ -64,8 +64,6 @@ public class BookServlet extends BaseServlet {
         String pageNo = req.getParameter("pageNo");
 //            3.重定向回图书列表管理页面
         resp.sendRedirect(req.getContextPath() + "/manager/bookServlet?action=page&pageNo=" + pageNo);
-
-
     }
 
     protected void list(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

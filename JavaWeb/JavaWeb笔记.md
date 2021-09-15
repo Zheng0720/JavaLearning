@@ -4378,993 +4378,216 @@ applicationScope ====== ServletContext 域
 
 ```
 
+## 第九章 cookie和session
 
+### 9.1 cookie
 
+#### 9.1.1 什么是cookie
 
+1、Cookie 翻译过来是饼干的意思。 
 
+2、Cookie 是服务器通知客户端保存键值对的一种技术。 
 
+3、客户端有了 Cookie 后，每次请求都发送给服务器。 
 
+4、每个 Cookie 的大小不能超过 4kb
 
-
-## 书城项目
-
-### 第一阶段 表单的验证
-
-**要求**
-
-1. 验证用户名：必须由字母，数字下划线组成，并且长度为 5 到 12 位 
-2. 验证密码：必须由字母，数字下划线组成，并且长度为 5 到 12 位 
-3. 验证确认密码：和密码相同 
-4. 邮箱验证：xxxxx@xxx.com 
-5. 验证码：现在只需要验证用户已输入。因为还没讲到服务器。验证码生成。
-
-**验证实现如下**
-
-```html
-<script type="text/javascript" src="static/jquery-1.7.2.js"></script>
-    <script type="text/javascript">
-        $(function () {
-            $("#sub_btn").click(function () {
-                // 验证用户名：必须由字母，数字下划线组成，并且长度为 5 到 12 位
-                //1.获取用户名输入框内容
-                var userName = $("#username").val();
-                //2.创建正则式
-                var userNamePat = /^\w{5,12}$/;
-                //3.使用test方法验证
-                if (!userNamePat.test(userName)) {
-                    //4.提示用户结果
-                    $("span.errorMsg").text("用户名不合法！");
-                    return false;
-                }
-                //4.提示用户结果
-                // 验证密码：必须由字母，数字下划线组成，并且长度为 5 到 12 位
-                //1.获取密码输入框内容
-                var password = $("#password").val();
-                //2.创建正则式
-                var passwordPat = /^\w{5,12}$/;
-                //3.使用test方法验证
-                if (!passwordPat.test(password)) {
-                    //4.提示用户结果
-                    $("span.errorMsg").text("密码不合法！");
-                    return false;
-                }
-                //4.提示用户结果
-                // 验证确认密码：和密码相同
-                var repwdText = $("#repwd").val();
-                if (repwdText != password) {
-                    $("span.errorMsg").text("确认密码和密码不一致！");
-                    return false;
-                }
-                // 邮箱验证：xxxxx@xxx.com
-                var emailText = $("#email").val();
-                var emailPat = /^[a-z\d]+(\.[a-z\d]+)*@([\da-z](-[\da-z])?)+(\.{1,2}[a-z]+)+$/;
-                if (!emailPat.test(emailText)) {
-                    $("span.errorMsg").text("邮箱格式不正确");
-                    return false;
-                }
-                // 验证码：现在只需要验证用户已输入。因为还没讲到服务器。验证码生成。
-                var codeText = $("#code").val();
-                codeText = $.trim(codeText);
-                if (codeText == null || codeText == "") {
-                    $("span.errorMsg").text("验证码不能为空");
-                    return false;
-                }
-                $("span.errorMsg").text("");
-            });
-        });
-    </script>
-```
-
-### 第二阶段 用户注册和登陆
-
-#### JavaEE项目的三层架构
-
-![image-20210905183656361](C:\Users\ZhengXinchang\AppData\Roaming\Typora\typora-user-images\image-20210905183656361.png)
-
-web 层     com.atguigu.web/servlet/controller 
-
-service 层   com.atguigu.service    Service 接口包 
-
-​					com.atguigu.service.impl      Service 接口实现类 
-
-dao 持久层      com.atguigu.dao     Dao 接口包 
-
-​							com.atguigu.dao.impl     Dao 接口实现类 
-
-实体 bean 对象     com.atguigu.pojo/entity/domain/bean    JavaBean 类 
-
-测试包     com.atguigu.test/junit 
-
-工具类    com.atguigu.utils
-
-#### 1 创建书城所需要的数据库
-
-```sql
-drop database if exists books;
-
-create database book;
-
-use book;
-create table user_table
-(
-    id       int primary key auto_increment,
-    username varchar(100) not null unique,
-    password varchar(32)  not null,
-    email    varchar(200)
-);
-insert into  user_table (username, password, email) values('郑鑫昌','123','1595761455@qq.com');
-select * from user_table
-```
-
-#### 2 创建对象User类
+#### 9.1.2创建cookie
 
 ```java
-package pojo;
-
-/**
- * @author ZhengXinchang
- * @create 2021-09-05-10:14
- */
-public class User {
-    private Integer id;
-    private String username;
-    private String password;
-    private String email;
-
-    public User() {
-    }
-
-
-    public User(Integer id, String username, String password, String email) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
+protected void createCookie(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html;charset=utf-8");
+        //1.创建cookie
+        Cookie cookie = new Cookie("key1", "value1");
+        resp.addCookie(cookie);
+        Cookie cookie2 = new Cookie("key2", "value2");
+        resp.addCookie(cookie2);
+        Cookie cookie3 = new Cookie("key3", "value3");
+        //2.通知客户端保存cookie
+        resp.addCookie(cookie3);
+        resp.getWriter().write("cookie创建成功");
 }
-
 ```
-
-#### 3 编写工具类JdbcUtils
-
-##### 创建连接
-
+#### 9.1.3服务器如何获取cookie
 ```java
-private static DruidDataSource dataSource;
+protected void getCookie(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html;charset=utf-8");
+        Cookie[] cookies = req.getCookies();
 
-    static {
-        try {
-            Properties properties = new Properties();
-            //读取配置文件
-            InputStream inputStream = JDBCUtils.class.getClassLoader().getResourceAsStream("jdbc.properties");
-            properties.load(inputStream);
-            //创建数据库连接池
-            dataSource = (DruidDataSource) DruidDataSourceFactory.createDataSource(properties);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 获取数据库连接池中的连接
-     *
-     * @return
-     */
-    public static Connection getConnection() {
-        Connection connection = null;
-        try {
-            connection = dataSource.getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return connection;
+        Cookie key1 = CookieUtils.findCookie("key1", cookies);
+        resp.getWriter().write("key1的cookie值为：" + key1.getValue());
     }
 ```
-
-##### 关闭连接
-
+#### 9.1.4cookie值的修改
 ```java
-/**
-     * 关闭连接
-     */
-    public static void closeConnection(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+    protected void updateCookie(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//        方案一:
+//        1.先创建一个要修改的同名的Cookie对象
+//        2.在构造器同时赋于新的Cookie值
+//        resp.setContentType("text/html;charset=utf-8");
+//        Cookie cookie = new Cookie("key1", "value123");
+////        3.调用response.addcookie(cookie);
+//        resp.addCookie(cookie);
+//        resp.getWriter().write("key1的cookie已经修改好");
+
+//        方案二:
+//        1、先查找到需要修改的 Cookie对象
+        Cookie key1 = CookieUtils.findCookie("key1", req.getCookies());
+        if (key1 != null) {
+//        2、调用setValue()方法赋于新的Cookie值
+            key1.setValue("newValue1");
+//        3、调用response.addCookie()通知客户端保存修改。
+            resp.addCookie(key1);
+
         }
     }
 ```
 
-#### 4 编写DAO
+#### 9.1.5 cookie的生命控制
 
-##### 编写BaseDao
+Cookie 的生命控制指的是如何管理 Cookie 什么时候被销毁（删除） 
 
-```java
-package dao.impl;
+setMaxAge() 
 
-import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.BeanHandler;
-import org.apache.commons.dbutils.handlers.BeanListHandler;
-import org.apache.commons.dbutils.handlers.ScalarHandler;
-import utils.JDBCUtils;
+​	正数，表示在指定的秒数后过期 
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
+​	负数，表示浏览器一关，Cookie 就会被删除（默认值是-1） 
 
-/**
- * @author ZhengXinchang
- * @create 2021-09-05-10:39
- */
-public abstract class BaseDao {
-    private QueryRunner queryRunner = new QueryRunner();
+​	零，表示马上删除 Cookie
 
+````java
+    protected void defaultLife(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Cookie cookie = new Cookie("defaultLife", "defaultLife");
+        cookie.setMaxAge(-1);//设置存活时间
+        resp.addCookie(cookie);
 
-    /**
-     * 用来执行insert/update/delete 语句
-     *
-     * @param sql
-     * @param args
-     * @return 如果返回-1，则执行失败
-     */
-    public int update(String sql, Object... args) {
-        Connection connection = JDBCUtils.getConnection();
-        try {
-            return queryRunner.update(connection, sql, args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            JDBCUtils.closeConnection(connection);
-        }
-        return -1;
     }
 
-    /**
-     * 查询返回一个Javabean的sql语句
-     *
-     * @param type 返回的对象类型
-     * @param sql  执行的sql语句
-     * @param args 参数值
-     * @param <T>  返回类型的泛型
-     * @return
-     */
-    public <T> T queryForOne(Class<T> type, String sql, Object... args) {
-        Connection connection = JDBCUtils.getConnection();
-        try {
-            return queryRunner.query(connection, sql, new BeanHandler<T>(type), args);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            JDBCUtils.closeConnection(connection);
-        }
-        return null;
-    }
-
-    /**
-     * 查询返回多个Javabean的sql语句
-     *
-     * @param type 返回的对象类型
-     * @param sql  执行的sql语句
-     * @param args 参数值
-     * @param <T>  返回类型的泛型
-     * @return
-     */
-    public <T> List<T> queryForList(Class<T> type, String sql, Object... args) {
-        Connection connection = JDBCUtils.getConnection();
-        try {
-            return queryRunner.query(connection, sql, new BeanListHandler<T>(type), args);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            JDBCUtils.closeConnection(connection);
-        }
-        return null;
-    }
-
-    /**
-     * 返回一行一列的sql语句
-     *
-     * @param sql
-     * @param args
-     * @return
-     */
-
-    public Object queryForSingleValue(String sql, Object... args) {
-        Connection connection = JDBCUtils.getConnection();
-        try {
-            return queryRunner.query(connection, sql, new ScalarHandler(), args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            JDBCUtils.closeConnection(connection);
-        }
-        return null;
-    }
-}
-
-```
-
-##### 编写userDao的接口
-
-```java
-package dao;
-
-
-import pojo.User;
-
-/**
- * @author ZhengXinchang
- * @create 2021-09-05-11:17
- */
-
-public interface UserDao {
-
-    /**
-     * 根据用户名查询用户信息
-     *
-     * @param username
-     * @return
-     */
-    public User queryUserByUserName(String username);
-
-    /**
-     * 保存用户信息
-     *
-     * @param user
-     * @return
-     */
-    public int savaUser(User user);
-
-    /**
-     * 根据用户名和密码登录
-     *
-     * @param username
-     * @param password
-     * @return
-     */
-    public User queryUserByUserNameAndPassword(String username, String password);
-
-}
-
-```
-
-##### 编写userDao的实现类
-
-```java
-package dao.impl;
-
-import dao.UserDao;
-import pojo.User;
-
-
-/**
- * @author ZhengXinchang
- * @create 2021-09-05-11:22
- */
-public class UserDaoImpl extends BaseDao implements UserDao {
-    @Override
-    public User queryUserByUserName(String username) {
-        String sql = "select id,username,password,email from user_table where username=?";
-        return queryForOne(User.class, sql, username);
-    }
-
-    @Override
-    public int savaUser(User user) {
-        String sql = "insert into  user_table (username, password, email) values(?,?,?)";
-        return update(sql, user.getUsername(), user.getPassword(), user.getEmail());
-    }
-
-    @Override
-    public User queryUserByUserNameAndPassword(String username, String password) {
-        String sql = "select id,username,password,email from user_table where username=? and password=?";
-        return queryForOne(User.class, sql, username, password);
-    }
-}
-```
-
-#### 5 编写service层
-
-##### userService接口
-
-```java
-package service;
-
-import pojo.User;
-
-/**
- * @author ZhengXinchang
- * @create 2021-09-05-11:43
- */
-public interface UserService {
-    /**
-     * 注册用户
-     *
-     * @param user
-     */
-    public void registerUser(User user);
-
-    /**
-     * 登录用户
-     *
-     * @param user
-     */
-    public User login(User user);
-
-    /**
-     * 检查用户名是否可用
-     *
-     * @param username
-     * @return 返回true表示用户名已经存在
-     */
-    public boolean existUserName(String username);
-}
-```
-
-##### service实现类
-
-```java
-package service.impl;
-
-import dao.UserDao;
-import dao.impl.UserDaoImpl;
-import pojo.User;
-import service.UserService;
-
-/**
- * @author ZhengXinchang
- * @create 2021-09-05-14:31
- */
-public class UserServiceImpl implements UserService {
-    private UserDao userDao = new UserDaoImpl();
-
-    @Override
-    public void registerUser(User user) {
-        userDao.savaUser(user);
-    }
-
-    @Override
-    public User login(User user) {
-        return userDao.queryUserByUserNameAndPassword(user.getUsername(), user.getPassword());
-    }
-
-    @Override
-    public boolean existUserName(String username) {
-        if (userDao.queryUserByUserName(username) == null) {
-            return false;
-        }
-        return true;
-    }
-}
-```
-
-#### 6 编写web层
-
-![image-20210905184647885](C:\Users\ZhengXinchang\AppData\Roaming\Typora\typora-user-images\image-20210905184647885.png)
-
-##### 修改注册界面 html和注册成功html
-
-##### 编写注册servlet程序
-
-```java
-package web;
-
-import pojo.User;
-import service.UserService;
-import service.impl.UserServiceImpl;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-/**
- * @author ZhengXinchang
- * @create 2021-09-05-14:51
- */
-public class RegisterServlet extends HttpServlet {
-    private UserService userService = new UserServiceImpl();
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //获取请求的参数
-        String username = req.getParameter("username");
-        String password = req.getParameter("password");
-        String email = req.getParameter("email");
-        String code = req.getParameter("code");
-
-        //验证码
-        if ("abcde".equalsIgnoreCase(code)) {
-            //检查用户名是否可用
-            if (userService.existUserName(username)) {//不可用
-                System.out.println("用户名[" + username + "]不可用，已存在");
-                req.getRequestDispatcher("/pages/user/regist.html").forward(req, resp);
-            } else {  //可用
-                User user = new User(null, username, password, email);
-                userService.registerUser(user);
-                //跳到注册成功页面
-                req.getRequestDispatcher("/pages/user/regist_success.html").forward(req, resp);
-            }
-        } else {
-            System.out.println("验证码[" + code + "]错误 ");
-            req.getRequestDispatcher("/pages/user/regist.html").forward(req, resp);
+    protected void deleteNow(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Cookie key1 = CookieUtils.findCookie("key1", req.getCookies());
+        if (key1 != null) {
+            key1.setMaxAge(0);
+            resp.addCookie(key1);
         }
     }
+    protected void defaultLife3600(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Cookie cookie = new Cookie("defaultLife3600", "defaultLife3600");
+        cookie.setMaxAge(3600);//设置存活时间
+        resp.addCookie(cookie);
+    }
+```
+````
+
+#### 9.1.6 cookie有效路径path的设置
+
+Cookie 的 path 属性可以有效的过滤哪些 Cookie 可以发送给服务器。哪些不发。 
+
+path 属性是通过请求的地址来进行有效的过滤。 
+
+CookieA   path=/工程路径 
+
+CookieB   path=/工程路径/abc 
+
+请求地址如下： 
+
+http://ip:port/工程路径/a.html 
+
+CookieA 发送 
+
+CookieB 不发送 
+
+http://ip:port/工程路径/abc/a.html 
+
+CookieA 发送 
+
+CookieB 发送
+
+```java
+protected void testPath(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Cookie cookie = new Cookie("path1", "path1");
+        cookie.setPath(req.getContextPath()+"/abc");
+        resp.addCookie(cookie);
+ }
+```
+
+
+
+### 9.2 Session会话
+
+### 9.2.1 什么是Session会话 
+
+1、Session 就一个接口（HttpSession）。 
+
+2、Session 就是会话。它是用来维护一个客户端和服务器之间关联的一种技术。 
+
+3、每个客户端都有自己的一个 Session 会话。 
+
+4、Session 会话中，我们经常用来保存用户登录之后的信息。 
+
+#### 9.2.2如何创建Session和获取(id号,是否为新) 
+
+如何创建和获取 Session。它们的 API 是一样的。 
+
+request.getSession() 
+
+第一次调用是：创建 Session 会话 ;之后调用都是：获取前面创建好的 Session 会话对象。 
+
+isNew();   判断到底是不是刚创建出来的（新的） 
+
+true 表示刚创建 
+
+false 表示获取之前创建 
+
+每个会话都有一个身份证号。也就是 ID 值。而且这个 ID 是唯一的。 getId() 得到 Session 的会话 id 值。 
+
+#### 9.2.3 Session域数据的存取
+
+```java
+protected void setAttribute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getSession().setAttribute("key1", "value1");
+    }
+
+    protected void getAttribute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Object key1 = req.getSession().getAttribute("key1");
+        resp.getWriter().write((String) key1);
 }
 ```
 
-##### 修改登录界面 html和登录成功html
+#### 9.2.4 Session生命周期控制
 
-##### 编写登录servlet程序
+public void setMaxInactiveInterval(int interval) 设置 Session 的超时时间（以秒为单位），超过指定的时长，Session 就会被销毁。
 
-```java
-package web;
+值为正数的时候，设定 Session 的超时时长。 负数表示永不超时（极少使用） 
 
-import pojo.User;
-import service.UserService;
-import service.impl.UserServiceImpl;
+public int getMaxInactiveInterval()获取 Session 的超时时间 
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-/**
- * @author ZhengXinchang
- * @create 2021-09-05-16:19
- */
-public class LoginServlet extends HttpServlet {
-    private UserService userService = new UserServiceImpl();
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String username = req.getParameter("username");
-        String password = req.getParameter("password");
-        if (userService.login(new User(null, username, password, null)) == null) {
-            System.out.println("登录失败");
-            req.getRequestDispatcher("/pages/user/login.html").forward(req, resp);
-        } else {
-            System.out.println("登录成功");
-            req.getRequestDispatcher("/pages/user/login_success.html").forward(req, resp);
-        }
-
-    }
-}
-```
-
-### 第三阶段
-
-#### 1.页面jsp动态化
-
-1. 在 html 页面顶行添加 page 指令。 
-2. 修改文件后缀名为：.jsp 
-3. 使用 IDEA 搜索替换.html 为.jsp(快捷键：Ctrl+Shift+R)
-
-#### 2.抽取页面中相同的内容
-
-1. head标签
-2. 每个页面的页脚
-3. 登陆成功后的菜单
-4. manager模块中的菜单
-
-#### 3.登录注册错误时的提示，及表单的回显
-
-以登录为例，将回显信息添加到request域中：
+public void invalidate() 让当前 Session 会话马上超时无效。
 
 ```java
-if (loginUser == null) {
-    System.out.println("登录失败");
-    //把错误信息，和回显的表单项信息，保存到request域中
-    req.setAttribute("msg", "用户名或密码错误");
-    req.setAttribute("username", username);
-    req.getRequestDispatcher("/pages/user/login.jsp").forward(req, resp);
-}
 ```
 
-jsp页面也要输出回显信息：
 
-```jsp
-<%--登录错误信息--%>
-${requestScope.msg==null?"请输入用户名和密码":requestScope.msg}
-<%--用户名回显信息--%>
-<input class="itxt" type="text" placeholder="请输入用户名"  
-       autocomplete="off"tabindex="1" name="username" value="${requestScope.username}"/>
-```
-
-#### 4.BaseServlet的抽取
-
-##### 优化一：合并LoginServlet和RgistServlet程序为UserServlet程序
-
-##### 优化二：使用反射优化大量else if代码
 
 ```java
-@Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setCharacterEncoding("utf-8");
-        String action = req.getParameter("action");
+ protected void defaultLife(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html;charset=utf-8");
+        int maxInactiveInterval = req.getSession().getMaxInactiveInterval();
+        resp.getWriter().write("session默认的超时时长：" + maxInactiveInterval);
+    }
 
-        try {
-            Method declaredMethod = this.getClass().getDeclaredMethod(action, HttpServletRequest.class, HttpServletResponse.class);
-            declaredMethod.invoke(this, req, resp);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+    protected void Life3(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html;charset=utf-8");
+        HttpSession session = req.getSession();
+        session.setMaxInactiveInterval(3);
+        int maxInactiveInterval = session.getMaxInactiveInterval();
+        resp.getWriter().write("session默认的超时时长：" + maxInactiveInterval);
+    }
+
+    protected void deleteNow(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html;charset=utf-8");
+        HttpSession session = req.getSession();
+        session.invalidate();//让session会话马上超时
+        resp.getWriter().write("session已无效");
     }
 ```
-
-##### 优化三：抽取BaseServlet程序
-
-#### 5.数据的封装和抽取BeanUtils的使用
-
-```java
-package utils;
-
-import org.apache.commons.beanutils.BeanUtils;
-import pojo.User;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-
-/**
- * @author ZhengXinchang
- * @create 2021-09-09-15:43
- */
-public class WebUtils {
-    //把 Map 中的值注入到对应的 JavaBean 属性中。
-    public static <T> T copyParamToBean(Map value, T bean) {
-        try {
-            BeanUtils.populate(bean, value);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        return bean;
-    }
-}
-```
-
-### 第四阶段 使用EL表达式修改表单回显
-
-### 第五阶段 
-
-#### MVC 概念
-
-MVC 
-
-全称：Model 模型、 View 视图、 Controller 控制器。 
-
-MVC 
-
-最早出现在 JavaEE 三层中的 Web 层，它可以有效的指导 Web 层的代码如何有效分离，单独工作。 
-
-View 视图：只负责数据和界面的显示，不接受任何与显示数据无关的代码，便于程序员和美工的分工合作—— JSP/HTML。
-
-Controller 控制器：只负责接收请求，调用业务层的代码处理请求，然后派发页面，是一个“调度者”的角色——Servlet。 转到某个页面。或者是重定向到某个页面。 
-
-Model 模型：将与业务逻辑相关的数据封装为具体的 JavaBean 类，其中不掺杂任何与数据处理相关的代码——JavaBean/domain/entity/pojo。 
-
-**MVC** **是一种思想** 
-
-MVC 的理念是将软件代码拆分成为组件，单独开发，组合使用（**目的还是为了降低耦合度**）。
-
-![image-20210912171737807](C:\Users\ZhengXinchang\AppData\Roaming\Typora\typora-user-images\image-20210912171737807.png)
-
-**MVC** **的作用还是为了降低耦合。让代码合理分层。方便后期升级和维护。**
-
-#### 1.图书模块
-
-##### 1.1编写图书的数据库表
-
-```sql
-create table book_table(
-    id int primary key auto_increment,
-    name varchar(100),
-    price decimal(11,2),
-    author varchar(100),
-    sales int,
-    stock int,
-    img_path varchar(200)
-);
-```
-
-##### 1.2 编写图书的javaBean
-
-Book类
-
-```java
-package pojo;
-
-/**
- * @author ZhengXinchang
- * @create 2021-09-09-17:13
- */
-public class Book {
-    private Integer id;
-    private String name;
-    private double price;
-    private String author;
-    private int sales;
-    private int stock;
-    private String imgPath = "static/img/default.jpg";
-
-    public Book() {
-    }
-
-    public Book(Integer id, String name, double price, String author, int sales, int stock, String imgPath) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.author = author;
-        this.sales = sales;
-        this.stock = stock;
-        //要求给定的图书封面路径不能为空
-        if (imgPath != null && !"".equals(imgPath)) {
-            this.imgPath = imgPath;
-        }
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public int getSales() {
-        return sales;
-    }
-
-    public void setSales(int sales) {
-        this.sales = sales;
-    }
-
-    public int getStock() {
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
-    }
-
-    public String getImgPath() {
-        return imgPath;
-    }
-
-    public void setImgPath(String imgPath) {
-        if (imgPath != null && !"".equals(imgPath)) {
-            this.imgPath = imgPath;
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "Book{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", price=" + price +
-                ", author='" + author + '\'' +
-                ", sales=" + sales +
-                ", stock=" + stock +
-                ", imgPath='" + imgPath + '\'' +
-                '}';
-    }
-}
-
-```
-
-##### 1.3编写图书模块的Dao
-
-Dao接口
-
-```java
-public interface BookDao {
-
-    public int addBook(Book book);
-
-    public int deleteBookById(Integer id);
-
-    public int updateBook(Book book);
-
-    public Book queryBookById(Integer id);
-
-    public Book queryBookByName(String name);
-
-    public List<Book> queryBooks();
-
-    public Integer queryForPageTotalCount();
-
-    public List<Book> queryForPageItems(int begin,int pageSize);
-}
-```
-
-BookDaoImpl实现类
-
-```java
-public class BookDaoImpl extends BaseDao implements BookDao {
-
-    @Override
-    public int addBook(Book book) {
-        String sql = "insert into book_table(`name`,`author`,`price`,`sales`,`stock`,`img_path`) " +
-                "values(?,?,?,?,?,?)";
-        return update(sql, book.getName(), book.getAuthor(), book.getPrice(), book.getSales(), book.getStock(), book.getImgPath());
-    }
-
-    @Override
-    public int deleteBookById(Integer id) {
-        String sql = "delete from book_table where id=?";
-        return update(sql, id);
-    }
-
-    @Override
-    public int updateBook(Book book) {
-        String sql = "update book_table set `name`=?,`author`=?,`price`=?,`sales`=?,`stock`=?,`img_path`=? where id=?";
-        return update(sql, book.getName(), book.getAuthor(), book.getPrice(), book.getSales(),
-                book.getStock(), book.getImgPath(), book.getId());
-    }
-
-    @Override
-    public Book queryBookById(Integer id) {
-        String sql = "select `id` , `name` , `author` , `price` , `sales` , `stock` , `img_path` imgPath " +
-                "from book_table where id=?";
-        return queryForOne(Book.class, sql, id);
-    }
-
-    @Override
-    public Book queryBookByName(String name) {
-        String sql = "select `id` , `name` , `author` , `price` , `sales` , `stock` , `img_path` imgPath from book_table where name=?";
-        return queryForOne(Book.class, sql, name);
-    }
-
-    @Override
-    public List<Book> queryBooks() {
-        String sql = "select `id` , `name` , `author` , `price` , `sales` , `stock` , `img_path` imgPath from book_table";
-        return queryForList(Book.class, sql);
-    }
-
-    @Override
-    public Integer queryForPageTotalCount() {
-        String sql = "select count(*) from `book_table`";
-        Number value = (Number) queryForSingleValue(sql);
-        return value.intValue();
-    }
-
-    @Override
-    public List<Book> queryForPageItems(int begin, int pageSize) {
-        String sql = "select `id` , `name` , `author` , `price` , `sales` , `stock` , `img_path` imgPath from book_table limit ?,?";
-        return queryForList(Book.class, sql, begin, pageSize);
-    }
-}
-```
-
-##### 1.4 编写图书模块的service
-
-BookService接口
-
-```java
-public interface BookService {
-
-    public void addBook(Book book);
-
-    public void deleteBookById(Integer id);
-
-    public void updateBook(Book book);
-
-    public Book queryBookById(Integer id);
-
-    public List<Book> queryBooks();
-}
-```
-
-BookService接口实现类
-
-```java
-public class BookServiceImpl implements BookService {
-    private BookDao bookDao = new BookDaoImpl();
-
-    @Override
-    public void addBook(Book book) {
-        bookDao.addBook(book);
-    }
-
-    @Override
-    public void deleteBookById(Integer id) {
-        bookDao.deleteBookById(id);
-    }
-
-    @Override
-    public void updateBook(Book book) {
-        bookDao.updateBook(book);
-    }
-
-    @Override
-    public Book queryBookById(Integer id) {
-        return bookDao.queryBookById(id);
-    }
-
-    @Override
-    public List<Book> queryBooks() {
-        return bookDao.queryBooks();
-    }
-}
-```
-
-##### 1.5 编写图书模块的web层，和页面的联调测试
 

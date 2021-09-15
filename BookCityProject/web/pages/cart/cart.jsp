@@ -8,16 +8,30 @@
     <%@include file="/pages/common/head.jsp" %>
     <script type="text/javascript">
         //删除确定
-        $(function (){
-            $("a.deleteItem").click(function (){
-                return confirm("确定要删除【"+$(this).parent().parent().find("td:first").text()+"】吗？");
+        $(function () {
+            $("a.deleteItem").click(function () {
+                return confirm("确定要删除【" + $(this).parent().parent().find("td:first").text() + "】吗？");
             });
         });
 
         // 清空购物车确定
-        $(function (){
-            $("#cart_clear").click(function (){
+        $(function () {
+            $("#cart_clear").click(function () {
                 return confirm("确定要清空购物车吗？");
+            });
+        });
+        //给输入框绑定失去焦点事件====onchange
+        $(function () {
+            $(".updateCount").change(function () {
+                var name = $(this).parent().parent().find("td:first").text();
+                var id = $(this).attr("bookId");
+                var count = this.value;
+                if (confirm("你确定要将【" + name + "】商品修改数量为【" + count + "】吗？")) {
+                    //发起请求，保存到服务器
+                    location.href = "cartServlet?action=updateCount&count=" + count + "&id=" + id;
+                } else {
+                    this.value = this.defaultValue;
+                }
             });
         });
     </script>
@@ -55,7 +69,9 @@
             <tr>
                 <td>${entry.value.name}</td>
                 <td>
-                <input style="width: 50px;" type="text" value="${entry.value.count}">
+                    <input class="updateCount" style="width: 50px;"
+                           bookId="${entry.value.id}"
+                           type="text" value="${entry.value.count}">
                 </td>
                 <td>${entry.value.price}</td>
                 <td>${entry.value.totalPrice}</td>
@@ -70,7 +86,7 @@
             <span class="cart_span">购物车中共有<span class="b_count">${sessionScope.cart.totalCount}</span>件商品</span>
             <span class="cart_span">总金额<span class="b_price">${sessionScope.cart.totalPrice}</span>元</span>
             <span class="cart_span" id="cart_clear"><a href="cartServlet?action=clear">清空购物车</a></span>
-            <span class="cart_span"><a href="pages/cart/checkout.jsp">去结账</a></span>
+            <span class="cart_span"><a href="orderServlet?action=createOrder">去结账</a></span>
         </div>
     </c:if>
 </div>
