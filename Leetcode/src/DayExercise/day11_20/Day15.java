@@ -31,9 +31,8 @@ public class Day15 {
         }
         return l==0;
     }
+    
 
     public static void main(String[] args) {
-        String s="(*)))";
-        System.out.println(checkValidString(s));
     }
 }
