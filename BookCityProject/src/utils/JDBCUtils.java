@@ -15,6 +15,7 @@ import java.util.Properties;
  */
 public class JDBCUtils {
     private static DruidDataSource dataSource;
+    private static ThreadLocal<Connection> conns = new ThreadLocal<Connection>();
 
     static {
         try {
@@ -35,25 +36,72 @@ public class JDBCUtils {
      * @return
      */
     public static Connection getConnection() {
-        Connection connection = null;
-        try {
-            connection = dataSource.getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        Connection connection = conns.get();
+        if (connection == null) {
+            try {
+                connection = dataSource.getConnection();
+                conns.set(connection);//保存到threadLocal对象中
+                connection.setAutoCommit(false);//设置为手动管理事务
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return connection;
     }
 
     /**
-     * 关闭连接
+     * 提交事务，并关闭释放连接
      */
-    public static void closeConnection(Connection connection) {
+    public static void commitAndClose() {
+        Connection connection = conns.get();
         if (connection != null) {
             try {
-                connection.close();
+                connection.commit();//提交事务
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
+        //一定要执行remove操作
+        conns.remove();
     }
+
+    /**
+     * 回滚事务，并关闭释放连接
+     */
+    public static void rollbackAndClose() {
+        Connection connection = conns.get();
+        if (connection != null) {
+            try {
+                connection.rollback();//提交事务
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        //一定要执行remove操作
+        conns.remove();
+    }
+    /**
+     * 关闭连接
+     */
+//    public static void closeConnection(Connection connection) {
+//        if (connection != null) {
+//            try {
+//                connection.close();
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 }

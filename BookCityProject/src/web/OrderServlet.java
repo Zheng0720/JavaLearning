@@ -4,6 +4,8 @@ import pojo.Cart;
 import pojo.User;
 import service.OrderService;
 import service.impl.OrderServiceImpl;
+import test.JDBCUtilsTest;
+import utils.JDBCUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +28,7 @@ public class OrderServlet extends BaseServlet {
             req.getRequestDispatcher("/pages/user/login.jsp").forward(req, resp);
             return;
         }
+
         Integer id = user.getId();
         String orderId = orderService.creatOrder(cart, id);
         req.getSession().setAttribute("orderId", orderId);

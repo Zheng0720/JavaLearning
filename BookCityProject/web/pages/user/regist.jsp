@@ -7,6 +7,18 @@
     <%@include file="/pages/common/head.jsp" %>
     <script type="text/javascript">
         $(function () {
+            $("#username").blur(function (){
+                //获取用户名
+                var username = this.value;
+                $.getJSON("${basePath}userServlet","action=ajaxExistUsername&username="+username,function (data){
+                    if(data.existUserName){
+                        $("span.errorMsg").text("用户名已存在");
+                    }else {
+                        $("span.errorMsg").text("用户名可用");
+                    }
+                });
+            });
+
             $("#sub_btn").click(function () {
                 // 验证用户名：必须由字母，数字下划线组成，并且长度为 5 到 12 位
                 //1.获取用户名输入框内容
