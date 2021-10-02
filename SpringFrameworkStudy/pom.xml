@@ -6,13 +6,7 @@
 
     <groupId>org.example</groupId>
     <artifactId>SpringFrameworkStudy</artifactId>
-    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
-    <modules>
-        <module>Spring-01-ioc1</module>
-        <module>Spring-02-HelloSpring</module>
-        <module>Spring-03-ioc2</module>
-    </modules>
 
     <properties>
         <maven.compiler.source>16</maven.compiler.source>
@@ -31,13 +25,6 @@
             <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>5.3.10</version>
-        </dependency>
-
 
     </dependencies>
 
