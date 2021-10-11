@@ -29,7 +29,6 @@ public class OrderServiceImpl implements OrderService {
         double totalPrice = cart.getTotalPrice();
         Order order = new Order(orderId, new Date(), new BigDecimal(totalPrice), 0, userId);
         orderDao.saveOrder(order);
-        int i=10/0;
 
         //购物车中的商品项
         for (Map.Entry<Integer, CartItem> entry : cart.getCartItems().entrySet()) {

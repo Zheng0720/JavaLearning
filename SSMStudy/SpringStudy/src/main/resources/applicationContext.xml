@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <import resource="applicationContextUser.xml"/>
+    <import resource="applicationContextProduct.xml"/>
+    <bean id="userDao" class="com.zheng.dao.UserDaoImpl">
+        <property name="username" value="郑鑫昌"/>
+        <property name="age" value="18"/>
+        <property name="strList">
+            <list>
+                <value>郑鑫昌</value>
+                <value>周杰伦</value>
+                <value>刘德华</value>
+                <value>张学友</value>
+            </list>
+        </property>
+        <property name="map">
+            <map>
+                <entry key="1" value-ref="user1"/>
+                <entry key="2" value-ref="user1"/>
+                <entry key="3" value-ref="user3"/>
+            </map>
+        </property>
+        <property name="properties">
+            <props>
+                <prop key="1">孙燕姿</prop>
+                <prop key="2">蔡依林</prop>
+            </props>
+        </property>
+    </bean>
+    <!--    <bean id="userDao" class="com.zheng.factory.StaticFactory" factory-method="getUserDao"/>-->
+    <!--    <bean id="userDaoFactory" class="com.zheng.factory.DynamicFactory"/>-->
+    <!--    <bean id="userDao" factory-bean="userDaoFactory" factory-method="getUserDao"/>-->
+    <bean id="user1" class="com.zheng.domain.User">
+        <property name="name" value="郑鑫昌"/>
+        <property name="address" value="天津"/>
+    </bean>
+    <bean id="user2" class="com.zheng.domain.User">
+        <property name="name" value="周杰伦"/>
+        <property name="address" value="台湾"/>
+    </bean>
+    <bean id="user3" class="com.zheng.domain.User">
+        <property name="name" value="孙燕姿"/>
+        <property name="address" value="新加坡"/>
+    </bean>
+
+    <bean id="userService" class="com.zheng.service.UserServiceImpl">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+</beans>

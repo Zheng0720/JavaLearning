@@ -1,52 +1,64 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author ZhengXinchang
  * @create 2021-10-02-14:27
  */
 public class Leetcode {
-    public int[][] merge(int[][] intervals) {
-        if(intervals.length==0){
-            return intervals;
+
+    int[] dxArray = new int[]{-1, 1, 0, 0};
+    int[] dyArray = new int[]{0, 0, -1, 1};
+
+    public boolean exist(char[][] board, String word) {
+        int m = board.length;
+        int n = board[0].length;
+        if (m * n < word.length()) {
+            return false;
         }
-        List<int[]> ans=new ArrayList<>();
-        Arrays.sort(intervals, Comparator.comparingInt(a->a[0]));
-        int[] curr=new int[2];
-        curr[0]=intervals[0][0];
-        curr[1]=intervals[0][1];
-        for (int i = 1; i <intervals.length; i++) {
-            if(intervals[i][0]>curr[1]){
-                ans.add(curr);
-                curr=new int[2];
-                curr[0]=intervals[i][0];
-                curr[1]=intervals[i][1];
-            }else if(intervals[i][0]<=curr[1]&&intervals[i][1]>curr[1]){
-                curr[1]=intervals[i][1];
+        boolean[][] visited=new boolean[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == word.charAt(0)) {
+                    if (dfs(board, word, 0, i, j,visited)) {
+                        return true;
+                    }
+                }
             }
         }
-        if(curr[1]<intervals[intervals.length-1][1]){
-            curr[1]=intervals[intervals.length-1][1];
-        }
-        ans.add(curr);
-        int[][] res=new int[ans.size()][2];
-        for(int j=0;j<ans.size();j++){
-            res[j][0]=ans.get(j)[0];
-            res[j][1]=ans.get(j)[1];
-        }
-        return res;
+        return false;
     }
+
+    public boolean dfs(char[][] board, String word, int index, int i, int j,boolean[][] visited) {
+        System.out.println(i + "," + j);
+        if (index == word.length()) {
+            return true;
+        }
+        if (i < 0 || i >= board.length || j < 0 || j >= board[0].length||visited[i][j]) {
+            return false;
+        }
+        if (board[i][j] != word.charAt(index)) {
+            return false;
+        }
+        visited[i][j]=true;
+        for (int k = 0; k < 4; k++) {
+            int dx = i + dxArray[k];
+            int dy = j + dyArray[k];
+            if (dfs(board, word, index + 1, dx, dy,visited)) {
+                return true;
+            }
+        }
+        visited[i][j]=false;
+        return false;
+    }
+
 
     public static void main(String[] args) {
         Leetcode leetcode = new Leetcode();
-        int[][] intervals = new int[][]{{4,5},{1,4},{0,1}};
-        int[][] merge = leetcode.merge(intervals);
-        for(int i=0;i<merge.length;i++){
-            System.out.print(merge[i][0]+" ");
-            System.out.print(merge[i][1]);
-            System.out.println();
-        }
+        char[][] board = {{'A','B','C','E'},{'S','F','C','S'},{'A','D','E','E'}};
+        String word = "ABCB";
+//        char[][] board = {{'a'}};
+//        String word = "a";
+        boolean exist = leetcode.exist(board, word);
+        System.out.println(exist);
     }
 }

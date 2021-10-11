@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util
+        https://www.springframework.org/schema/util/spring-util.xsd">
+    <util:list id="bookList">
+        <value>三国演义</value>
+        <value>红楼梦</value>
+        <value>水浒传</value>
+        <value>西游记</value>
+    </util:list>
+    <bean id="book" class="ch1_IOC.BookList">
+        <property name="list" ref="bookList"/>
+    </bean>
+</beans>

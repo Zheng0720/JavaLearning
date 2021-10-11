@@ -49,8 +49,9 @@ public class CartServlet extends BaseServlet {
         if (cart != null) {
             cart.deleteItem(id);
             resp.sendRedirect(req.getHeader("Referer"));
+        } else {
+            resp.sendRedirect("http://localhost:8080/BookCityProject");
         }
-        resp.sendRedirect("http://localhost:8080/BookCityProject");
     }
 
     protected void clear(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -59,8 +60,9 @@ public class CartServlet extends BaseServlet {
         if (cart != null) {
             cart.clear();
             resp.sendRedirect(req.getHeader("Referer"));
+        } else {
+            resp.sendRedirect("http://localhost:8080/BookCityProject");
         }
-        resp.sendRedirect("http://localhost:8080/BookCityProject");
     }
 
     protected void updateCount(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
